@@ -1,0 +1,7 @@
+node_modules/
+.env
+npm-debug.log*
+
+# Generated PDFs shouldn't be committed to source control — keep the folder
+# structure with .gitkeep files, ignore the actual generated output
+storage/quotations/**/*.pdf
