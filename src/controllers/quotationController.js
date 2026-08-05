@@ -26,6 +26,7 @@ async function postQuotation(req, res) {
     quotationId: result.quotationId,
     fileName: result.fileName,
     downloadUrl: result.downloadUrl,
+    pdfBase64: result.pdfBase64,
     generatedAt: result.generatedAt.toISOString(),
   });
 }
