@@ -19,7 +19,7 @@ function ensureDirExists(dirPath) {
 
 /**
  * @param {object} payload - validated quotation payload from the frontend
- * @returns {Promise<{ quotationId: string, fileName: string, filePath: string, downloadUrl: string, generatedAt: Date }>}
+ * @returns {Promise<{ quotationId: string, fileName: string, filePath: string, downloadUrl: string, pdfBase64: string, generatedAt: Date }>}
  */
 async function createQuotation(payload) {
   const generatedAt = new Date();
@@ -45,7 +45,16 @@ async function createQuotation(payload) {
 
   const downloadUrl = `${config.baseUrl}/quotations/${dateFolder}/${fileName}`;
 
-  return { quotationId, fileName, filePath, downloadUrl, generatedAt };
+  // NOTE: free-tier hosts (e.g. Render's free plan) use ephemeral disk —
+  // a file written here can disappear on the next restart, sometimes
+  // within seconds. So the PDF bytes are also returned directly in the
+  // response (base64) — the customer's download never depends on this
+  // file still existing later. `downloadUrl`/`filePath` are kept for
+  // record-keeping and for the upcoming WhatsApp-send stage, on a best-
+  // effort basis.
+  const pdfBase64 = fs.readFileSync(filePath).toString("base64");
+
+  return { quotationId, fileName, filePath, downloadUrl, pdfBase64, generatedAt };
 }
 
 module.exports = { createQuotation };
